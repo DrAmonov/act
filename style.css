@@ -1,0 +1,14 @@
+body {
+  font-family: sans-serif;
+  margin: 20px;
+}
+
+#codeInput {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+#testOutput {
+  border: 1px solid #eee;
+  padding: 10px;
+}

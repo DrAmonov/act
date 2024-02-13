@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Copyright Info Test Page</title>
+	</head>
+	<body>
+		<style>
+			.source-link {
+				color: red;
+				text-decoration: none;
+			}
+		</style>
+
+		<h1>Testing Copyright Info Function</h1>
+		<p>Try copying text from this paragraph.</p>
+		<p>This is another paragraph with more text to try copying.</p>
+		<script>
+			function addCopyrightInfo(event) {
+				// Validate event parameter presence (optional)
+				if (!event) {
+					console.warn(
+						'addCopyrightInfo: Missing event parameter. Please supply the event object.'
+					);
+					return;
+				}
+
+				// Get selected text (handle browser compatibility)
+				var selection = window.getSelection();
+				if (selection.rangeCount) {
+					var selectedText = selection.toString();
+				} else if (document.selection) {
+					// For older IE browsers
+					selectedText = document.selection.createRange().text;
+				} else {
+					console.debug('The text [selection] not found.');
+					return;
+				}
+
+				// Create source link element with desired anchor text and preserve inline styles
+				var sourceLink = document.createElement('a');
+				sourceLink.href = 'https://theidioms.com';
+				sourceLink.text = 'theidioms.com';
+				sourceLink.classList.add('source-link'); // Add a CSS class for styling (optional)
+
+				// Combine text and link without HTML tags or line break
+				var copiedContent = selectedText + ' Source: ' + sourceLink.textContent;
+
+				// Prioritize modern `navigator.clipboard.writeText` (handle errors)
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard
+						.writeText(copiedContent)
+						.then(() => {
+							console.log('Text copied successfully!');
+						})
+						.catch((err) => {
+							console.error('Failed to copy text using modern method:', err);
+							// Fallback to execCommand if necessary
+							try {
+								var textArea = document.createElement('textarea');
+								textArea.value = copiedContent;
+								document.body.appendChild(textArea);
+								textArea.select();
+								var successful = document.execCommand('copy');
+								if (successful) {
+									console.log(
+										'Text copied successfully using fallback method.'
+									);
+								} else {
+									console.warn('Fallback copy may not work in all browsers.');
+								}
+								document.body.removeChild(textArea);
+							} catch (err) {
+								console.error('Failed to copy text using fallback:', err);
+							}
+						});
+				} else {
+					// Fallback to execCommand directly
+					try {
+						var textArea = document.createElement('textarea');
+						textArea.value = copiedContent;
+						document.body.appendChild(textArea);
+						textArea.select();
+						var successful = document.execCommand('copy');
+						if (successful) {
+							console.log('Text copied successfully using fallback method.');
+						} else {
+							console.warn('Fallback copy may not work in all browsers.');
+						}
+						document.body.removeChild(textArea);
+					} catch (err) {
+						console.error('Failed to copy text using fallback:', err);
+					}
+				}
+
+				// Clear the selection
+				selection.removeAllRanges();
+			}
+
+			// Attach to a copy event listener (modify selector and event type as needed)
+			document.addEventListener('copy', addCopyrightInfo);
+
+			// Optional styling (if using a CSS class):
+		</script>
+	</body>
+</html>
